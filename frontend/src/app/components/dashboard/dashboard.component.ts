@@ -12,23 +12,23 @@ import { SnackbarService } from '../../services/snackbar.service';
   imports: [CommonModule, ResumeUploadComponent, RouterModule, FormsModule],
   template: `
     <div class="dashboard-container">
-      <div class="header">
+      <div class="header" [class.compact]="currentResume">
         <h1>AI Resume Matcher</h1>
-        <p class="subtitle">Upload a new resume or select an existing one to find the perfect job match.</p>
+        <p class="subtitle" *ngIf="!currentResume">Upload a new resume or select an existing one to get started.</p>
       </div>
 
-      <div class="grid">
+      <div class="grid" [class.has-matches]="matches.length > 0 || currentResume">
         <!-- Left Column: Upload / Select -->
-        <div class="col">
-          <div class="section-card">
-            <h3>1. Upload New Resume</h3>
-            <app-resume-upload (resumeUploaded)="onResumeUploaded($event)"></app-resume-upload>
+        <div class="col upload-column">
+          <div class="section-card upload-card">
+            <h3>Upload New Resume</h3>
+             <app-resume-upload (resumeUploaded)="onResumeUploaded($event)"></app-resume-upload>
           </div>
 
           <div class="divider"><span>OR</span></div>
 
-          <div class="section-card">
-            <h3>2. Select Existing Resume</h3>
+          <div class="section-card select-card">
+            <h3>Select Existing Resume</h3>
             <select class="select-control" [ngModel]="selectedResumeId" (ngModelChange)="onResumeSelected($event)">
               <option [ngValue]="null" disabled>-- Choose a Resume --</option>
               <option *ngFor="let resume of resumes" [ngValue]="resume.id">
@@ -38,23 +38,22 @@ import { SnackbarService } from '../../services/snackbar.service';
           </div>
           
           <div *ngIf="currentResume" class="resume-card fade-in">
-            <h3>Current Resume</h3>
-            <p><strong>File:</strong> {{ currentResume.filename }}</p>
-            <div class="slogan-badge">Analyzed</div>
+            <div class="resume-info">
+                <h3>Current Profile</h3>
+                <p class="file-name">{{ currentResume.filename }}</p>
+                <span class="status-badge">Analyzed</span>
+            </div>
+            <button class="btn-clear" (click)="clearSelection()">Clear Selection</button>
           </div>
         </div>
 
         <!-- Right Column: Matches -->
-        <div class="col">
-          <h2 class="section-title">Recommended Jobs</h2>
+        <div class="col matches-column" *ngIf="currentResume">
+          <h2 class="section-title" *ngIf="matches.length > 0 || loadingMatches">Recommended Jobs</h2>
           
           <div *ngIf="loadingMatches" class="loading-state">
             <div class="loader"></div>
-            <p>Finding best matches...</p>
-          </div>
-
-          <div *ngIf="!loadingMatches && matches.length === 0" class="empty-state">
-            <p>Upload or select a resume to see matches.</p>
+            <p>Analyzing profile & finding matches...</p>
           </div>
 
           <div *ngFor="let job of matches; let i = index" class="job-card fade-in" [style.animation-delay]="i * 100 + 'ms'">
@@ -96,72 +95,152 @@ import { SnackbarService } from '../../services/snackbar.service';
   `,
   styles: [`
     .dashboard-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 2rem;
+      max-width: 800px; /* Default narrow width for centered initial state */
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      transition: max-width 0.4s ease;
     }
+    
+    /* When matches exist, expand container */
+    .grid.has-matches {
+        /* Layout logic handles the grid changes, container just needs space */
+    }
+    
     .header {
       text-align: center;
-      margin-bottom: 1rem;
-      padding-top: 0;
+      margin-bottom: 2.5rem;
+      padding-top: 1rem;
+      transition: all 0.3s ease;
     }
+    .header.compact {
+        margin-bottom: 1.5rem;
+    }
+    
     .header h1 {
-      font-size: 1.5rem;
+      font-size: 2rem;
       margin: 0 0 0.5rem 0;
+      font-weight: 800;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.025em;
     }
     .subtitle {
       color: #6b7280;
-      font-size: 0.95rem;
+      font-size: 1.1rem;
       margin: 0;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 2rem;
-    }
-    @media (max-width: 768px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-    .section-card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-    }
-    .section-card h3 { margin-top: 0; font-size: 1rem; color: #374151; margin-bottom: 1rem; }
-    
-    .section-title {
-        text-align: center;
-        font-size: 1.25rem;
-        color: #1f2937;
-        margin-top: 0;
-        margin-bottom: 1rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .divider { text-align: center; margin: 1.5rem 0; position: relative; }
-    .divider::before { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: #e2e8f0; z-index: 1; }
-    .divider span { background: #f8fafc; padding: 0 1rem; color: #9ca3af; position: relative; z-index: 2; font-size: 0.9rem; }
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
     
-    .select-control { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; background: white; }
+    /* Active State Layout */
+    .grid.has-matches {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        align-items: start;
+    }
     
+    /* Ensure container grows when grid grows */
+    :host ::ng-deep .dashboard-container:has(.grid.has-matches) {
+       max-width: 1200px;
+    } 
+    /* Fallback for :has support if needed, but Angular encapsulates styles. 
+       Actually better to just bind class on container too.
+    */
+    
+    .upload-column {
+       display: flex;
+       flex-direction: column;
+       gap: 1.5rem;
+    }
+
+    /* Cards */
+    .section-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .section-card:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .section-card h3 { 
+        margin-top: 0; 
+        font-size: 1.1rem; 
+        font-weight: 600;
+        color: #111827; 
+        margin-bottom: 1.25rem; 
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .divider { 
+        text-align: center; 
+        margin: 0.5rem 0; 
+        position: relative; 
+        height: 1.5rem;
+    }
+    .divider::before { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: #e5e7eb; z-index: 1; }
+    .divider span { background: #f8fafc; padding: 0 1rem; color: #9ca3af; position: relative; z-index: 2; font-size: 0.85rem; font-weight: 500;}
+    
+    .select-control { 
+        width: 100%; 
+        padding: 0.875rem 1rem; 
+        border: 1px solid #d1d5db; 
+        border-radius: 8px; 
+        font-family: inherit; 
+        background-color: #fff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+    .select-control:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    /* Current Resume Card */
     .resume-card {
-      margin-top: 1.5rem;
       padding: 1.5rem;
-      background: #f0f9ff;
+      background: #eff6ff;
       border-radius: 12px;
-      border: 1px solid #bae6fd;
+      border: 1px solid #bfdbfe;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
-    .slogan-badge {
-      display: inline-block;
-      margin-top: 0.5rem;
-      background: #dcfce7;
-      color: #166534;
-      padding: 0.25rem 0.75rem;
-      border-radius: full;
-      font-size: 0.875rem;
-      font-weight: 600;
-      border-radius: 9999px;
+    .resume-info h3 { margin: 0 0 0.25rem 0; font-size: 0.9rem; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+    .file-name { margin: 0; font-weight: 600; color: #1e3a8a; word-break: break-all; }
+    .status-badge { inline-size: fit-content; background: #dbeafe; color: #1e40af; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 600; margin-top: 0.5rem; display: inline-block;}
+    
+    .btn-clear {
+        background: white;
+        border: 1px solid #bfdbfe;
+        color: #2563eb;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        align-self: flex-start;
+        transition: all 0.2s;
     }
+    .btn-clear:hover { background: #dbeafe; }
+    
+
     
     .job-card {
       background: white;
@@ -393,5 +472,11 @@ export class DashboardComponent implements OnInit {
 
   closeJobDetails() {
     this.selectedJob = null;
+  }
+
+  clearSelection() {
+    this.currentResume = null;
+    this.selectedResumeId = null;
+    this.matches = [];
   }
 }
