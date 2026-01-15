@@ -14,8 +14,12 @@ An intelligent AI-powered platform that matches candidates with the perfect job 
 ## 📸 Screenshots
 
 ### Dashboard
-The central hub for managing resumes and viewing recommendations. The "Recommended Jobs" section is dynamically updated based on the selected resume.
-![Dashboard](screenshots/dashboard.png)
+The central hub for managing resumes.
+![Dashboard Home](screenshots/dashboard_home.png)
+
+### Recommendations
+The "Recommended Jobs" section is dynamically updated based on the selected resume, providing instant feedback.
+![Dashboard Matches](screenshots/dashboard_matches.png)
 
 ### Intelligent Job Matching
 Clicking on a job card reveals detailed insights, including a precise match score and a relevance breakdown.
