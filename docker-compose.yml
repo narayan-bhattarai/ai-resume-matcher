@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db.znjgwofpvfwpvzcnajdb.supabase.co:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - ml-service
+
+  ml-service:
+    build: ./ml-service
+    ports:
+      - "8000:8000"
