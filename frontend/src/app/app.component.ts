@@ -50,7 +50,7 @@ import { SnackbarComponent } from './components/snackbar/snackbar.component';
       gap: 0.5rem;
     }
     .logo-img {
-      height: 40px;
+      height: 64px;
       object-fit: contain;
     }
     .links a {
