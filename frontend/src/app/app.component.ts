@@ -11,7 +11,7 @@ import { SnackbarComponent } from './components/snackbar/snackbar.component';
     <div class="app-container">
       <nav>
         <div class="logo" routerLink="/" style="cursor: pointer;">
-           <img src="assets/logo.png" alt="CVynapse" class="logo-img">
+           <img src="/assets/logo.png" alt="CVynapse" class="logo-img">
         </div>
         <div class="links">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
@@ -52,6 +52,7 @@ import { SnackbarComponent } from './components/snackbar/snackbar.component';
     .logo-img {
       height: 64px;
       object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
     .links a {
       margin-left: 2rem;
