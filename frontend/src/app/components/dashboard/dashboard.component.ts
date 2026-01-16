@@ -17,7 +17,7 @@ import { SnackbarService } from '../../services/snackbar.service';
         <p class="subtitle" *ngIf="!currentResume">Upload a new resume or select an existing one to get started.</p>
       </div>
 
-      <div class="grid" [class.has-matches]="matches.length > 0 || currentResume">
+      <div class="grid" [class.has-matches]="matches.length > 0 || currentResume" [class.initial-view]="!currentResume">
         <!-- Left Column: Upload / Select -->
         <div class="col upload-column">
           <div class="section-card upload-card">
@@ -95,26 +95,18 @@ import { SnackbarService } from '../../services/snackbar.service';
   `,
   styles: [`
     .dashboard-container {
-      max-width: 800px; /* Default narrow width for centered initial state */
+      max-width: 600px; /* narrowed for better focus */
       margin: 2rem auto;
       padding: 0 1.5rem;
       transition: max-width 0.4s ease;
     }
     
-    /* When matches exist, expand container */
-    .grid.has-matches {
-        /* Layout logic handles the grid changes, container just needs space */
-    }
-    
     .header {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
       padding-top: 1rem;
-      transition: all 0.3s ease;
     }
-    .header.compact {
-        margin-bottom: 1.5rem;
-    }
+    .header.compact { margin-bottom: 1rem; }
     
     .header h1 {
       font-size: 2rem;
@@ -125,86 +117,41 @@ import { SnackbarService } from '../../services/snackbar.service';
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.025em;
     }
-    .subtitle {
-      color: #6b7280;
-      font-size: 1.1rem;
-      margin: 0;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+    .subtitle { color: #6b7280; font-size: 1.1rem; margin: 0; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+    .grid { display: flex; flex-direction: column; gap: 1.5rem; }
+    
+    .upload-column {
+       display: flex;
+       flex-direction: column;
+       gap: 1rem; 
     }
 
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-    
-    /* Active State Layout */
+    /* Active State (Stacked Left) */
     .grid.has-matches {
         display: grid;
-        grid-template-columns: 350px 1fr;
+        grid-template-columns: 320px 1fr;
         align-items: start;
+        gap: 2rem; 
     }
     
     /* Ensure container grows when grid grows */
     :host ::ng-deep .dashboard-container:has(.grid.has-matches) {
        max-width: 1200px;
-    } 
-    /* Fallback for :has support if needed, but Angular encapsulates styles. 
-       Actually better to just bind class on container too.
-    */
-    
-    .upload-column {
-       display: flex;
-       flex-direction: column;
-       gap: 1.5rem;
     }
 
     /* Cards */
     .section-card {
       background: white;
-      padding: 2rem;
-      border-radius: 16px;
+      padding: 1.5rem;
+      border-radius: 12px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
-    .section-card:hover {
-       transform: translateY(-2px);
-       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-    }
-    
-    .section-card h3 { 
-        margin-top: 0; 
-        font-size: 1.1rem; 
-        font-weight: 600;
-        color: #111827; 
-        margin-bottom: 1.25rem; 
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .divider { 
-        text-align: center; 
-        margin: 0.5rem 0; 
-        position: relative; 
-        height: 1.5rem;
-    }
-    .divider::before { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: #e5e7eb; z-index: 1; }
-    .divider span { background: #f8fafc; padding: 0 1rem; color: #9ca3af; position: relative; z-index: 2; font-size: 0.85rem; font-weight: 500;}
+    .section-card h3 { margin-top: 0; font-size: 1.1rem; font-weight: 600; color: #111827; margin-bottom: 1rem; }
     
     .select-control { 
-        width: 100%; 
-        padding: 0.875rem 1rem; 
-        border: 1px solid #d1d5db; 
-        border-radius: 8px; 
-        font-family: inherit; 
-        background-color: #fff;
-        font-size: 0.95rem;
-        cursor: pointer;
-        transition: border-color 0.2s;
+        width: 100%; padding: 0.875rem; border: 1px solid #d1d5db; border-radius: 8px; background-color: #fff; cursor: pointer;
     }
     .select-control:focus {
         outline: none;

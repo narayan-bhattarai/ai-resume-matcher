@@ -11,7 +11,7 @@ import { SnackbarComponent } from './components/snackbar/snackbar.component';
     <div class="app-container">
       <nav>
         <div class="logo" routerLink="/" style="cursor: pointer;">
-           <span class="logo-icon">🚀</span> ResumeMatcher.AI
+           <img src="assets/logo.png" alt="CVynapse" class="logo-img">
         </div>
         <div class="links">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
@@ -45,12 +45,13 @@ import { SnackbarComponent } from './components/snackbar/snackbar.component';
       z-index: 10;
     }
     .logo {
-      font-weight: 800;
-      font-size: 1.25rem;
-      color: #111827;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+    }
+    .logo-img {
+      height: 40px;
+      object-fit: contain;
     }
     .links a {
       margin-left: 2rem;

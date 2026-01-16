@@ -49,18 +49,24 @@ import { SnackbarService } from '../../services/snackbar.service';
     .drop-zone {
       border: 2px dashed #e5e7eb;
       border-radius: 12px;
-      padding: 1rem;
+      padding: 1rem; /* Further reduced */
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
+      min-height: 120px; /* Enforce limits */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     .drop-zone:hover, .drop-zone.dragging {
       border-color: #2563eb;
       background: #eff6ff;
     }
     .icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+      margin-top: 0;
     }
     .sub-text {
       color: #9ca3af;
